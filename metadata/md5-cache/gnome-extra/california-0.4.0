@@ -1,0 +1,9 @@
+DEFINED_PHASES=-
+DESCRIPTION=Personal task manager
+EAPI=4
+HOMEPAGE=https://wiki.gnome.org/Apps/Todo
+IUSE=+introspection
+KEYWORDS=~amd64
+LICENSE=GPL-3+
+SLOT=0
+_md5_=1de6d6bd0900baaee2fef38174c6ba28
