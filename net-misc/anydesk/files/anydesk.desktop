@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=AnyDesk
+Comment=Управление удаленными рабочими столами
+GenericName=AnyDesk
+Exec=anydesk %U
+Icon=anydesk
+Type=Application
+StartupNotify=true
+Categories=Network;Utility;
+Name[ru_RU]=anydesk
