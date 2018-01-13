@@ -1,2 +1,0 @@
-# ZwerGeR
-Gentoo repository
