@@ -1,0 +1,4 @@
+DIST deepin-fonts-wine_2.18-2_all.deb 211714 SHA256 369d99b2ad07d5b5a1762f0962fb4da8bee691d863cd8353b5bf0d92ab0ef791
+DIST deepin-libwine_2.18-2_i386.deb 19895220 SHA256 5c26e76a4fc744dec2d21bdab14417fa1d2cbdc945ce7a881f5082c65b4fddb4
+DIST deepin-wine32_2.18-2_i386.deb 79294 SHA256 40bf62778fe6cecd28a9e389cca03bbcebddeaaf416a0ee6e1f1b7438c576f83
+DIST deepin-wine_2.18-2_all.deb 94932 SHA256 c0e5ca2c3bd12f9b69f133ccd26c6e8eafa56b948f3dd48af6b7f75b4c9c6d7c
