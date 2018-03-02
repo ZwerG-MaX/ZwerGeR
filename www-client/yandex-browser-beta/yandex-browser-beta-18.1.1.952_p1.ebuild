@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -17,6 +17,7 @@ SRC_URI="
 	amd64? ( https://repo.yandex.ru/yandex-browser/deb/pool/main/y/yandex-browser-beta/yandex-browser-beta_${MY_PV}_amd64.deb -> ${P}.deb )
 "
 KEYWORDS="~amd64"
+IUSE="ffmpeg-codecs"
 
 RDEPEND="
 	dev-libs/expat
@@ -49,9 +50,8 @@ RDEPEND="
 	x11-libs/libXtst
 	x11-libs/pango[X]
 	x11-misc/xdg-utils
-	|| (
-		www-plugins/yandex-browser-ffmpeg-codecs-bin
-		www-plugins/yandex-browser-ffmpeg-codecs
+	ffmpeg-codecs? (
+		=www-plugins/yandex-browser-ffmpeg-codecs-63.0.3239.132
 	)
 	sys-libs/libudev-compat
 "
@@ -120,6 +120,11 @@ src_install() {
 
 pkg_postinst() {
 	xdg_desktop_database_update
+	if ! use ffmpeg-codecs; then
+		ewarn "For a complete support of video\audio in the HTML5 format"
+		ewarn "emerge an ebuild 'www-plugins/yandex-browser-ffmpeg-codec'."
+		ewarn "For more info see: https://yandex.ru/support/browser/working-with-files/video-audio.xml#video-linux"
+	fi
 }
 
 pkg_postrm() {
