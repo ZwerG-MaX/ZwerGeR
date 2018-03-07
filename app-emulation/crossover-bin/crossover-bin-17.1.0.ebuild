@@ -99,7 +99,7 @@ src_prepare() {
 
 src_install() {
 	# Install crossover symlink, bug #476314
-#	dosym /opt/cxoffice/bin/crossover /opt/bin/crossover
+	dosym /opt/cxoffice/bin/crossover /opt/bin/crossover
 
 	# Install documentation
 	dodoc README changelog.txt
