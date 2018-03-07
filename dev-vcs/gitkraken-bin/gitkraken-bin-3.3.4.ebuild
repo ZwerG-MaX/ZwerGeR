@@ -14,7 +14,7 @@ LICENSE="gitkraken-EULA"
 SLOT="0"
 KEYWORDS="-* ~amd64"
 
-RDEPEND="dev-util/electron-bin:1.6
+RDEPEND="dev-util/electron:1.6
 	net-libs/gnutls
 	gnome-base/libgnome-keyring
 	media-gfx/graphite2"
