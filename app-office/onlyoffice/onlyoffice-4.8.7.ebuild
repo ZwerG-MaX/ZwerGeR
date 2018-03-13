@@ -31,7 +31,7 @@ DEPEND="
 	x11-libs/libxcb
 	media-fonts/dejavu
 	media-fonts/liberation-fonts
-	app-office/libreoffice
+	>=app-office/libreoffice-6.0.2.1
 	x11-libs/libX11
 	x11-libs/libXScrnSaver
 	net-misc/curl
