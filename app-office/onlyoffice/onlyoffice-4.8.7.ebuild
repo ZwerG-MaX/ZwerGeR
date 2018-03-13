@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit font eutils versionator rpm
+inherit eutils versionator rpm font
 
 # Описываем программу
 DESCRIPTION="onlyoffice is an office productivity suite"
@@ -24,20 +24,20 @@ IUSE=""
 # Описываем зависимости
 DEPEND="
 	app-arch/rpm
-	xcb-util-image  
-	xcb-util-keysyms  
-	xcb-util-renderutil  
-	xcb-util-wm
+	x11-libs/xcb-util-image
+	x11-libs/xcb-util-keysyms
+	x11-libs/xcb-util-renderutil
+	x11-libs/xcb-util-wm
 	x11-libs/libxcb
 	media-fonts/dejavu
 	media-fonts/liberation-fonts
-	app-office/libreoffice # требуются шрифты
+	app-office/libreoffice
 	x11-libs/libX11
 	x11-libs/libXScrnSaver
-	?net-misc/curl
+	net-misc/curl
 	dev-libs/boost
-	x11-libs/gtkglext
-	"
+	x11-libs/gtkglext"
+
 # Распаковка пакета:
 src_unpack () {
 	rpm_src_unpack ${A}
@@ -45,6 +45,6 @@ src_unpack () {
 }
 
 # Устанавливаем пакет:
-src_install() {
-		cp -vR ${S}/* ${D}/
+src_install () {
+	cp -vR "${S}"/* "${D}"/
 }
