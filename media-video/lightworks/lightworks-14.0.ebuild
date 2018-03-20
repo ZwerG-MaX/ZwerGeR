@@ -30,8 +30,8 @@ RDEPEND="
 	x11-libs/cairo
 	x11-libs/pixman
 	x11-libs/gtk+:3
-	dev-qt/qtgui:4
-	dev-qt/qtcore:4
+	dev-qt/qtgui:5
+	dev-qt/qtcore:5
 	media-libs/jpeg:8
 	gnome-extra/libgsf
 	media-libs/libpng:0
