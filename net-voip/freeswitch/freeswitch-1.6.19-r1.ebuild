@@ -130,7 +130,7 @@ RDEPEND="
 	libedit? ( dev-libs/libedit )
 	odbc? ( dev-db/unixODBC )
 
-	esl_java? ( >=virtual/jre-1.5:* )
+	esl_java? ( >=virtual/jre-1.8:* )
 	esl_lua? ( || ( dev-lang/lua:5.1 dev-lang/luajit:2 ) )
 	esl_managed? ( >=dev-lang/mono-1.9 )
 	esl_perl? ( dev-lang/perl )
@@ -180,12 +180,12 @@ DEPEND="${RDEPEND}
 	>=sys-devel/autoconf-2.60
 	>=sys-devel/automake-1.10
 	virtual/pkgconfig
-	esl_java? ( >=virtual/jdk-1.5:* >=dev-lang/swig-2.0 )
+	esl_java? ( >=virtual/jdk-1.8:* >=dev-lang/swig-2.0 )
 	esl_lua? ( >=dev-lang/swig-2.0 )
 	esl_managed? ( >=dev-lang/swig-2.0 )
 	esl_perl? ( >=dev-lang/swig-2.0 )
 	esl_python? ( >=dev-lang/swig-2.0 )
-	freeswitch_modules_java? ( >=virtual/jdk-1.5:* )
+	freeswitch_modules_java? ( >=virtual/jdk-1.8:* )
 "
 
 PDEPEND="media-sound/freeswitch-sounds
@@ -360,8 +360,7 @@ esl_doperlmod() {
 }
 
 src_prepare() {
-	# disable -Werror
-#	epatch "${FILESDIR}/${P}-no-werror.patch"
+	epatch "${FILESDIR}/${P}-zrtp-pie.patch"
 	# Fix broken libtool?
 	sed -i "1i export to_tool_file_cmd=func_convert_file_noop" "${S}/libs/apr/Makefile.in"
 	sed -i "1i export to_tool_file_cmd=func_convert_file_noop" "${S}/libs/apr-util/Makefile.in"
