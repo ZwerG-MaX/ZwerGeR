@@ -33,7 +33,7 @@ RDEPEND="
 	icons? ( oxygen? ( kde-frameworks/oxygen-icons )
 		!oxygen? ( virtual/freedesktop-icon-theme ) )
 	lightdm? ( x11-misc/lightdm )
-	lximage? ( >=media-gfx/lximage-qt-${PV} )
+	lximage? ( >=media-gfx/lximage-qt-0.6.0 )
 	!minimal? ( x11-wm/openbox
 		>=x11-misc/obconf-qt-${PV} )
 	policykit? ( >=lxqt-base/lxqt-policykit-${PV}
