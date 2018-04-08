@@ -14,7 +14,7 @@ IUSE="+about admin +filemanager +icons lightdm lximage minimal +oxygen +policyki
 REQUIRED_USE="oxygen? ( icons )"
 
 RDEPEND="
-	>=dev-util/lxqt-build-tools-${PV}
+	>=dev-util/lxqt-build-tools-0.4.0
 	>=lxqt-base/liblxqt-${PV}
 	>=lxde-base/lxmenu-data-0.1.2
 	>=lxqt-base/lxqt-config-${PV}
