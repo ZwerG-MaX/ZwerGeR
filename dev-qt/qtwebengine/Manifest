@@ -1,0 +1,5 @@
+DIST qtwebengine-5.10.0-icu-patches.tar.bz2 6821 SHA256 0376f99ec6105726f0b8c0ecd8abf43a0592432d4d410c980689afe92bb2d035
+DIST qtwebengine-5.11.0-icu-patches.tar.bz2 7598 SHA256 66f41ad37da878d269790f88f4e232bdecafd252fdeb0225c26c4a22454a3f07
+DIST qtwebengine-5.11.0_beta2-icu-patches.tar.bz2 6781 SHA256 76784b3927f3694ba68fc4d1f1be66b16fc294b9d17f4822f6904245d3f05eee
+DIST qtwebengine-everywhere-src-5.10.1.tar.xz 209844952 SHA256 12644f8d2ba8354a2a533d5a7f3f5139c6ff168c2f51aa3e21b701db6dbc01de
+DIST qtwebengine-everywhere-src-5.11.0-beta2.tar.xz 221511360 SHA256 fb5b2daffd55f0f4398e2cce9f022191543e6486b39f4a53ba67a23b5175f4fd
