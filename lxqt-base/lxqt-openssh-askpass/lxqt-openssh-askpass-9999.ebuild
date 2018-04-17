@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -9,9 +9,9 @@ HOMEPAGE="http://lxqt.org/"
 
 if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
-	EGIT_REPO_URI="https://github.com/lxde/${PN}.git"
+	EGIT_REPO_URI="https://github.com/lxqt/${PN}.git"
 else
-	SRC_URI="https://github.com/lxde/${PN}/releases/download/${PV}/${P}.tar.xz"
+	SRC_URI="https://github.com/lxqt/${PN}/releases/download/${PV}/${P}.tar.xz"
 	KEYWORDS="~amd64 ~arm ~arm64 ~x86"
 fi
 
@@ -31,7 +31,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	dev-qt/linguist-tools:5
-	>=dev-util/lxqt-build-tools-0.3.1
+	>=dev-util/lxqt-build-tools-0.4.0
 "
 
 src_configure() {
