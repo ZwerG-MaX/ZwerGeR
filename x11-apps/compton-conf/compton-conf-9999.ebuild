@@ -28,10 +28,10 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 
-src_prepare(){
-	eapply "${FILESDIR}/desktop_entry.patch"
-	eapply_user
-}
+#src_prepare(){
+#	eapply "${FILESDIR}/desktop_entry.patch"
+#	eapply_user
+#}
 
 src_configure() {
 	local mycmakeargs=( -DPULL_TRANSLATIONS=OFF	)
