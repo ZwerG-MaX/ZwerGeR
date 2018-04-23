@@ -9,7 +9,7 @@ HOMEPAGE="http://lxqt.org/"
 
 if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
-	EGIT_REPO_URI="https://github.com/lxqt/${PN}.git"
+	EGIT_REPO_URI="https://github.com/ZwerG-MaX/${PN}.git"
 else
 	SRC_URI="https://github.com/lxqt/${PN}/releases/download/${PV}/${P}.tar.xz"
 	KEYWORDS="~amd64 ~arm ~arm64 ~x86"
