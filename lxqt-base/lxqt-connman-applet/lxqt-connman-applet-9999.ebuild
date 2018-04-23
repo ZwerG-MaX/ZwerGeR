@@ -29,6 +29,6 @@ DEPEND="${RDEPEND}
 "
 
 src_configure() {
-	local mycmakeargs=( -DPULL_TRANSLATIONS=ON )
+	local mycmakeargs=( -DPULL_TRANSLATIONS=OFF )
 	cmake-utils_src_configure
 }
