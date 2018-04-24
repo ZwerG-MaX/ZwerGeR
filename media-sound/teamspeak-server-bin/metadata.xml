@@ -6,6 +6,7 @@
 		<name>nyronium</name>
 	</maintainer>
 	<use>
-		<flag name="system-openssl">Use system OpenSSL.</flag>
+		<flag name="html">Install HTML Documentation.</flag>
+		<flag name="tsdns">Make use of TeamSpeak DNS.</flag>
 	</use>
 </pkgmetadata>

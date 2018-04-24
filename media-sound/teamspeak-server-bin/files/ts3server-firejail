@@ -1,0 +1,2 @@
+#!/bin/bash
+exec firejail --private-bin=ts3server,bash --shell=none --name=teamspeak3 ts3server $*

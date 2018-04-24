@@ -1,0 +1,10 @@
+#!/bin/bash
+
+BASEDIR="/opt/teamspeak3-server"
+
+export LD_LIBRARY_PATH="${BASEDIR}/lib${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH}"
+
+# Work around DT_RPATH (.) security issue by chdir'ing into expected $LD_LIBRARY_PATH
+cd "${BASEDIR}"
+
+TS3SERVER_LICENSE=accept exec "${BASEDIR}/sbin/ts3server-bin" $*
