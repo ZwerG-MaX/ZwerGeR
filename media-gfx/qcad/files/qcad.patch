@@ -1,0 +1,1 @@
+В директории /usr/lib64/qt5/plagins/platforms требуется присутствие библиотеки libqlinuxfb.so перед выполнением qmake -r

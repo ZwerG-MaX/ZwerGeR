@@ -19,29 +19,24 @@ fi
 LICENSE="GPL-3"
 SLOT="0"
 IUSE=""
-#RESTRICT="mirror"
 
-DEPEND="media-libs/glu
+DEPEND="
+		media-libs/glu
 		dev-qt/qtcore:5
 		dev-qt/qtgui:5
 		dev-qt/qtopengl:5
-		dev-qt/qtscript:5
+		dev-qt/qtscript:5[scripttools]
 		dev-qt/qtsvg:5
 		dev-qt/qtxmlpatterns:5
 		dev-qt/qthelp:5
 		dev-qt/qtsql:5
 		dev-qt/designer:5
-		sys-devel/gcc"
+		sys-devel/gcc:6.4.0
+"
 
-#src_prepare() {
-#	rm *.tar.gz
-#	cd qcad-${PV}
-#	sed -e 's|$${QT_VERSION}|5.5.0|g' \
-#      -i src/3rdparty/3rdparty.pro # Don't require specific Qt version
-#}
+RDEPEND="${DEPEND}"
+
 src_configure () {
-	    #eqmake5  ${PN}.pro
-	    #emake || die
 	    qmake -r || die
 }
 
@@ -57,17 +52,7 @@ src_install() {
 		dodir usr/bin
 		echo -e '#!/bin/sh\nLD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}"/usr/lib/qcad" exec /usr/lib/qcad/qcad-bin "$@"' >"${D}"/usr/bin/qcad
 
-		# qt
-	#for sofiles in /usr/lib/qt/plugins/imageformats/*.so
-	#	do
-	#	ln -sf ${sofiles} ${D}/usr/lib/qcad/plugins/imageformats/${sofiles##/*/}
-	#	done
-	#for sofiles in /usr/lib/qt/plugins/sqldrivers/*.so
-	#	do
-	#	ln -sf ${sofiles} ${D}/usr/lib/qcad/plugins/sqldrivers/${sofiles##/*/}
-	#	done
-
-chmod 0755 "${D}"/usr/bin/qcad
+		chmod 0755 "${D}"/usr/bin/qcad
 
 		insinto /usr/share/icons/hicolor/scalable/apps
 		doins scripts/qcad_icon.svg
