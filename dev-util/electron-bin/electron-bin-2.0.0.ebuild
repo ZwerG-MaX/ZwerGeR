@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -7,12 +7,14 @@ SRC_URI_BASE="https://github.com/electron/electron/releases/download"
 DESCRIPTION="Cross platform application development framework based on web technologies"
 HOMEPAGE="https://electron.atom.io"
 SRC_URI="amd64? ( ${SRC_URI_BASE}/v${PV}/${PN/-bin}-v${PV}-linux-x64.zip -> ${P}-x64.zip )
-	x86? ( ${SRC_URI_BASE}/v${PV}/${PN/-bin}-v${PV}-linux-ia32.zip -> ${P}-ia32.zip )"
+	x86? ( ${SRC_URI_BASE}/v${PV}/${PN/-bin}-v${PV}-linux-ia32.zip -> ${P}-ia32.zip )
+	arm? ( ${SRC_URI_BASE}/v${PV}/${PN/-bin}-v${PV}-linux-arm.zip -> ${P}-arm.zip )
+	arm64? ( ${SRC_URI_BASE}/v${PV}/${PN/-bin}-v${PV}-linux-arm64.zip -> ${P}-arm64.zip )"
 RESTRICT="mirror"
 
 LICENSE="MIT"
-SLOT="1.6"
-KEYWORDS="-* ~amd64 ~x86"
+SLOT="2.0"
+KEYWORDS="-* ~amd64 ~x86 ~arm ~arm64"
 
 RDEPEND="dev-libs/nss
 	dev-libs/expat
@@ -26,7 +28,7 @@ RDEPEND="dev-libs/nss
 	virtual/opengl
 	virtual/ttf-fonts
 	x11-libs/cairo
-	x11-libs/gtk+:2
+	x11-libs/gtk+:3
 	x11-libs/libnotify
 	x11-libs/libxcb
 	x11-libs/libXtst
@@ -34,7 +36,7 @@ RDEPEND="dev-libs/nss
 DEPEND="app-arch/unzip"
 
 S="${WORKDIR}"
-MY_PN=${PN}-${SLOT}
+MY_PN="${PN}-${SLOT}"
 
 QA_PRESTRIPPED="/opt/${MY_PN}/libffmpeg.so
 	/opt/${MY_PN}/libnode.so
@@ -43,7 +45,6 @@ QA_PRESTRIPPED="/opt/${MY_PN}/libffmpeg.so
 src_install() {
 	exeinto /opt/${MY_PN}
 	doexe electron
-	scanelf -Xe "${ED%/}"/opt/${MY_PN}/electron || die
 
 	insinto /opt/${MY_PN}
 	doins -r locales resources

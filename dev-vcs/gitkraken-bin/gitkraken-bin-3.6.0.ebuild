@@ -5,7 +5,8 @@ EAPI=6
 
 inherit gnome2-utils xdg
 
-DESCRIPTION="The downright luxurious Git client, for Windows, Mac & Linux"
+ELECTRON_SLOT="1.8"
+DESCRIPTION="The intuitive, fast, and beautiful cross-platform Git client"
 HOMEPAGE="https://www.gitkraken.com"
 SRC_URI="https://release.gitkraken.com/linux/v${PV}.tar.gz -> ${P}.tar.gz"
 RESTRICT="mirror"
@@ -14,7 +15,7 @@ LICENSE="gitkraken-EULA"
 SLOT="0"
 KEYWORDS="-* ~amd64"
 
-RDEPEND="dev-util/electron-bin:1.6
+RDEPEND="dev-util/electron-bin:${ELECTRON_SLOT}
 	net-libs/gnutls
 	gnome-base/libgnome-keyring
 	media-gfx/graphite2"
@@ -22,7 +23,9 @@ RDEPEND="dev-util/electron-bin:1.6
 S="${WORKDIR}/gitkraken"
 
 src_install() {
-	newbin "${FILESDIR}"/gitkraken-launcher.sh gitkraken
+	newbin "${FILESDIR}"/gitkraken-launcher.sh-r1 gitkraken
+	sed "s:%%ELECTRON%%:electron-${ELECTRON_SLOT}:" \
+		-i "${ED%/}"/usr/bin/gitkraken || die
 
 	insinto /usr/libexec/gitkraken
 	doins -r resources/app.asar{,.unpacked}

@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -11,7 +11,7 @@ SRC_URI="amd64? ( ${SRC_URI_BASE}/v${PV}/${PN/-bin}-v${PV}-linux-x64.zip -> ${P}
 RESTRICT="mirror"
 
 LICENSE="MIT"
-SLOT="1.7"
+SLOT="1.8"
 KEYWORDS="-* ~amd64 ~x86"
 
 RDEPEND="dev-libs/nss
@@ -43,7 +43,6 @@ QA_PRESTRIPPED="/opt/${MY_PN}/libffmpeg.so
 src_install() {
 	exeinto /opt/${MY_PN}
 	doexe electron
-	scanelf -Xe "${ED%/}"/opt/${MY_PN}/electron || die
 
 	insinto /opt/${MY_PN}
 	doins -r locales resources
