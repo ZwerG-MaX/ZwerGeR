@@ -19,11 +19,11 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 
-pkg_setup(){
+#pkg_setup(){
 #	use amd64 && ARCH="x64"
 #	use x86 && ARCH="x86"
-	S="${WORKDIR}/${PN}-v${PV}-linux-x64"
-}
+#	S="${WORKDIR}/${PN}-v${PV}-linux-x64"
+#}
 
 src_install(){
 	insinto /opt/${PN}
