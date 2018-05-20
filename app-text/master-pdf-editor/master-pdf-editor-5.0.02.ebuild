@@ -44,14 +44,14 @@ S="${WORKDIR}/${PN}-${PV%%.*}"
 
 src_install() {
 	insinto /opt/${PN}
-	doins -r fonts lang stamps templates masterpdfeditor4.png
+	doins -r fonts lang stamps templates masterpdfeditor5.png
 
 	exeinto /opt/${PN}
-	doexe masterpdfeditor4
+	doexe masterpdfeditor5
 
-	dosym ../${PN}/masterpdfeditor4 /opt/bin/masterpdfeditor4
-	make_desktop_entry "masterpdfeditor4 %f" \
-		"Master PDF Editor ${PV}" /opt/${PN}/masterpdfeditor4.png \
+	dosym ../${PN}/masterpdfeditor5 /opt/bin/masterpdfeditor5
+	make_desktop_entry "masterpdfeditor5 %f" \
+		"Master PDF Editor ${PV}" /opt/${PN}/masterpdfeditor5.png \
 		"Office;Graphics;Viewer" \
 		"MimeType=application/pdf;application/x-bzpdf;application/x-gzpdf;\nTerminal=false"
 }
