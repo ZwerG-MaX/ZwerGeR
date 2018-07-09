@@ -4,7 +4,7 @@
 EAPI=6
 inherit cmake-utils
 
-DESCRIPTION="Common base library for the LXQt desktop environment"
+DESCRIPTION="LXQt system administration tool"
 HOMEPAGE="http://lxqt.org/"
 
 if [[ ${PV} == *9999* ]]; then
@@ -15,10 +15,11 @@ else
 	KEYWORDS="~amd64 ~x86"
 fi
 
-LICENSE="|| ( BSD LGPL-2.1+ )"
+LICENSE="LGPL-2.1+"
 SLOT="0"
 
-RDEPEND="
+DEPEND="
+	dev-libs/glib:2
 	>=dev-libs/libqtxdg-3.1.0
 	dev-qt/qtcore:5
 	dev-qt/qtdbus:5
@@ -26,20 +27,12 @@ RDEPEND="
 	dev-qt/qtwidgets:5
 	dev-qt/qtx11extras:5
 	dev-qt/qtxml:5
-	kde-frameworks/kwindowsystem:5[X]
-	x11-libs/libXScrnSaver
-"
-DEPEND="${RDEPEND}
-	dev-qt/linguist-tools:5
 	>=dev-util/lxqt-build-tools-0.4.0
+	lxqt-base/liblxqt
+	kde-frameworks/kwindowsystem:5
+	x11-libs/libX11
 "
-
-pkg_pretend() {
-	if [[ ${MERGE_TYPE} != binary ]]; then
-		tc-is-gcc && [[ $(gcc-version) < 4.8 ]] && \
-		die 'The active compiler needs to be gcc 4.8 (or newer)'
-	fi
-}
+RDEPEND="${DEPEND}"
 
 src_configure() {
 	local mycmakeargs=( -DPULL_TRANSLATIONS=OFF )
