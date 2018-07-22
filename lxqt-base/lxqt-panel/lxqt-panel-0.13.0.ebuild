@@ -43,7 +43,7 @@ CDEPEND="
 	networkmonitor? ( sys-libs/libstatgrab )
 	sensors? ( sys-apps/lm_sensors )
 	statusnotifier? ( >=dev-libs/libdbusmenu-qt-0.9.3_pre20160218-r1 )
-	sysstat? ( =lxqt-base/libsysstat-0.5* )
+	sysstat? ( =lxqt-base/libsysstat-0.4* )
 	tray? ( x11-libs/libXcomposite
 			x11-libs/libXdamage
 			x11-libs/libXrender )
