@@ -12,7 +12,7 @@ if [[ ${PV} == *9999* ]]; then
 	EGIT_REPO_URI="https://github.com/lxqt/${PN}.git"
 else
 	SRC_URI="https://github.com/lxqt/${PN}/releases/download/${PV}/${P}.tar.xz"
-	KEYWORDS="amd64 ~arm ~arm64 x86"
+	KEYWORDS="amd64 x86"
 fi
 
 LICENSE="LGPL-2.1+"
@@ -60,26 +60,39 @@ RDEPEND="${CDEPEND}
 	>=lxde-base/lxmenu-data-0.1.2
 "
 
-src_prepare() {
-	epatch "${FILESDIR}"/lxqt-menu-cleanup.patch
-	cmake-utils_src_prepare
-}
+#src_prepare() {
+#	epatch "${FILESDIR}"/lxqt-menu-cleanup.patch
+#	cmake-utils_src_prepare
+#}
 
 src_configure() {
-	local mycmakeargs i y
-	mycmakeargs=( -DPULL_TRANSLATIONS=OFF )
-	for i in clock colorpicker cpuload desktopswitch dom kbindicator mainmenu mount \
-		networkmonitor quicklaunch sensors showdesktop statusnotifier \
-		sysstat taskbar tray volume worldclock; do
-		#Switch to ^^ when we switch to EAPI=6.
-		#y=${i^^}
-		y=$(tr '[:lower:]' '[:upper:]' <<< "${i}")
-		mycmakeargs+=( $(cmake-utils_use ${i} ${y}_PLUGIN) )
-	done
+	local mycmakeargs=(
+		-DPULL_TRANSLATIONS=OFF
+		$(usex clock '-DCLOCK_PLUGIN=ON' '-DCLOCK_PLUGIN=OFF')
+		$(usex colorpicker '-DCOLORPICKER_PLUGIN=ON' '-DCOLORPICKER_PLUGIN=OFF')
+		$(usex cpuload '-DCPULOAD_PLUGIN=ON' '-DCPULOAD_PLUGIN=OFF')
+		$(usex desktopswitch '-DDESKTOPSWITCH_PLUGIN=ON' '-DDESKTOPSWITCH_PLUGIN=OFF')
+		$(usex dom '-DDOM_PLUGIN=ON' '-DDOM_PLUGIN=OFF')
+		$(usex kbindicator '-DKBINDICATOR_PLUGIN=ON' '-DKBINDICATOR_PLUGIN=OFF')
+		$(usex mainmenu '-DMAINMENU_PLUGIN=ON' '-DMAINMENU_PLUGIN=OFF')
+		$(usex mount '-DMOUNT_PLUGIN=ON' '-DMOUNT_PLUGIN=OFF')
+		$(usex networkmonitor '-DNETWORKMONITOR_PLUGIN=ON' '-DNETWORKMONITOR_PLUGIN=OFF')
+		$(usex quicklaunch '-DQUICKLAUNCH_PLUGIN=ON' '-DQUICKLAUNCH_PLUGIN=OFF')
+		$(usex sensors '-DSENSORS_PLUGIN=ON' '-DSENSORS_PLUGIN=OFF')
+		$(usex showdesktop '-DSHOWDESKTOP_PLUGIN=ON' '-DSHOWDESKTOP_PLUGIN=OFF')
+		$(usex statusnotifier '-DSTATUSNOTIFIER_PLUGIN=ON' '-DSTATUSNOTIFIER_PLUGIN=OFF')
+		$(usex sysstat '-DSYSSTAT_PLUGIN=ON' '-DSYSSTAT_PLUGIN=OFF')
+		$(usex taskbar '-DTASKBAR_PLUGIN=ON' '-DTASKBAR_PLUGIN=OFF')
+		$(usex tray '-DTRAY_PLUGIN=ON' '-DTRAY_PLUGIN=OFF')
+		$(usex volume '-DVOLUME_PLUGIN=ON' '-DVOLUME_PLUGIN=OFF')
+		$(usex worldclock '-DWORLDCLOCK_PLUGIN=ON' '-DWORLDCLOCK_PLUGIN=OFF')
+	)
 
 	if use volume; then
-		mycmakeargs+=( $(cmake-utils_use alsa VOLUME_USE_ALSA)
-			$(cmake-utils_use pulseaudio VOLUME_USE_PULSEAUDIO) )
+		mycmakeargs+=(
+			$(usex alsa '-DVOLUME_USE_ALSA=ON' '-DVOLUME_USE_ALSA=OFF')
+			$(usex pulseaudio '-DVOLUME_USE_PULSEAUDIO=ON' '-DVOLUME_USE_PULSEAUDIO=OFF')
+		)
 	fi
 
 	cmake-utils_src_configure
