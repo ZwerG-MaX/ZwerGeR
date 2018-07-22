@@ -1,0 +1,332 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 159d16e..5c83cff 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ project(compton-conf)
+ 
+-cmake_minimum_required(VERSION 2.8.12)
++cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
+ set(LXQTBT_MINIMUM_VERSION "0.4.0")
+ 
+ option(UPDATE_TRANSLATIONS "Update source translation translations/*.ts files" OFF)
+@@ -33,7 +33,7 @@ if(USE_QT4)
+   include(${QT_USE_FILE})
+   message(STATUS "Building with Qt${QTVERSION}")
+ else()
+-  cmake_minimum_required(VERSION 2.8.11)
++  cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
+   find_package(Qt5Widgets REQUIRED)
+   find_package(Qt5DBus REQUIRED)
+   find_package(Qt5LinguistTools REQUIRED QUIET)
+@@ -47,8 +47,9 @@ pkg_check_modules(LIBCONFIG REQUIRED
+ )
+ 
+ include(GNUInstallDirs REQUIRED)
++include(LXQtCompilerSettings NO_POLICY_SCOPE) # must be after cmake_minimum_required()
+ 
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_KEYWORDS -fno-exceptions")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_KEYWORDS")
+ 
+ if(USE_QT4)
+   set(QTX_INCLUDE_DIRS ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTDBUS_DIR})
+@@ -110,6 +111,8 @@ else()
+   qt5_wrap_ui(compton-conf_UI_H ${compton-conf_UIS})
+ endif()
+ 
++set_property(SOURCE ${compton-conf_UI_H} PROPERTY SKIP_AUTOMOC ON)
++
+ add_definitions(
+   -DCOMPTON_CONF_DATA_DIR="${CMAKE_INSTALL_FULL_DATADIR}/compton-conf"
+ )
+diff --git a/autostart/CMakeLists.txt b/autostart/CMakeLists.txt
+index 5f596a5..3f6e199 100644
+--- a/autostart/CMakeLists.txt
++++ b/autostart/CMakeLists.txt
+@@ -1,5 +1,3 @@
+-cmake_minimum_required(VERSION 3.0.2 FATAL_ERROR)
+-
+ file(GLOB DESKTOP_FILES_IN *.desktop.in)
+ 
+ # Translations **********************************
+diff --git a/compton.conf.example b/compton.conf.example
+index 9919602..d2d4589 100644
+--- a/compton.conf.example
++++ b/compton.conf.example
+@@ -14,7 +14,7 @@ shadow-exclude = [ "name = 'Notification'", "class_g = 'Conky'", "class_g ?= 'No
+ # shadow-exclude = "n:e:Notification";
+ shadow-ignore-shaped = false;
+ # shadow-exclude-reg = "x10+0+0";
+-# xinerama-shadow-crop = true;
++xinerama-shadow-crop = false;
+ 
+ # Opacity
+ menu-opacity = 0.8;
+diff --git a/maindialog.cpp b/maindialog.cpp
+index f6e33d5..7f523d5 100644
+--- a/maindialog.cpp
++++ b/maindialog.cpp
+@@ -95,6 +95,22 @@ MainDialog::MainDialog(QString userConfigFile) {
+         static_cast<QSpinBox*>(child)->setValue(val);
+       connect(child, SIGNAL(valueChanged(int)), SLOT(onSpinValueChanged(int)));
+     }
++    else if(child->inherits("QRadioButton")) {
++      if(child->parent()->inherits("QGroupBox")) {
++        QByteArray groupKeyName = child->parent()->objectName().replace('_', '-').toLatin1();
++        if(keyName.startsWith(groupKeyName)) {
++          const char *val;
++          if(config_lookup_string(&config_, groupKeyName.constData(), &val) == CONFIG_TRUE)
++              static_cast<QRadioButton*>(child)->setChecked(keyName == groupKeyName.append('-').append(val));
++          connect(child, SIGNAL(toggled(bool)), SLOT(onRadioGroupToggled(bool)));
++          continue;
++        }
++      }
++      int val = -1;
++      if(config_lookup_bool(&config_, keyName.constData(), &val) == CONFIG_TRUE)
++        static_cast<QRadioButton*>(child)->setChecked((bool)val);
++      connect(child, SIGNAL(toggled(bool)), SLOT(onButtonToggled(bool)));
++    }
+   }
+ }
+ 
+@@ -127,6 +143,17 @@ void MainDialog::onSpinValueChanged(int i) {
+   // saveConfig();
+ }
+ 
++void MainDialog::onRadioGroupToggled(bool checked) {
++  if (checked) {
++    qDebug() << "toggled: " << sender()->objectName();
++    // generate config key from objectName.
++    QByteArray keyName = sender()->parent()->objectName().replace('_', '-').toLatin1();
++    QByteArray val = sender()->objectName().right(sender()->objectName().size() - (keyName.size() + 1)).replace('_', '-').toLatin1();
++    configSetString(keyName.constData(), val);
++    // saveConfig();
++  }
++}
++
+ void MainDialog::saveConfig() {
+   // ensure the existance of user config dir
+   QString configDir = QFileInfo(userConfigFile_).dir().path();
+@@ -216,3 +243,14 @@ void MainDialog::configSetBool(const char* key, bool val) {
+   }
+   config_setting_set_bool(setting, val);
+ }
++
++void MainDialog::configSetString(const char *key, const char *val)
++{
++  config_setting_t* setting = config_lookup(&config_, key);
++  if(!setting) { // setting not found
++    // add a new setting for it
++    config_setting_t* root = config_root_setting(&config_);
++    setting = config_setting_add(root, key, CONFIG_TYPE_STRING);
++  }
++  config_setting_set_string(setting, val);
++}
+diff --git a/maindialog.h b/maindialog.h
+index b0bdbc6..b88abc3 100644
+--- a/maindialog.h
++++ b/maindialog.h
+@@ -47,7 +47,8 @@ class MainDialog : public QDialog
+   void configSetInt(const char* key, int val);
+   void configSetFloat(const char* key, double val);
+   void configSetBool(const char* key, bool val);
+-  
++  void configSetString(const char* key, const char* val);
++
+ private Q_SLOTS:
+   void onButtonToggled(bool checked);
+   void onSpinValueChanged(double d);
+@@ -55,6 +56,7 @@ private Q_SLOTS:
+   void onDialogButtonClicked(QAbstractButton* button);
+   void onColorButtonClicked();
+   void onAboutButtonClicked();
++  void onRadioGroupToggled(bool checked);
+ 
+ private:
+   Ui::MainDialog* ui;
+diff --git a/maindialog.ui b/maindialog.ui
+index 70994cb..39a2abd 100644
+--- a/maindialog.ui
++++ b/maindialog.ui
+@@ -6,8 +6,8 @@
+    <rect>
+     <x>0</x>
+     <y>0</y>
+-    <width>493</width>
+-    <height>371</height>
++    <width>569</width>
++    <height>424</height>
+    </rect>
+   </property>
+   <property name="windowTitle">
+@@ -24,6 +24,43 @@
+        <string>Shadow</string>
+       </attribute>
+       <layout class="QFormLayout" name="formLayout">
++       <property name="verticalSpacing">
++        <number>5</number>
++       </property>
++       <property name="bottomMargin">
++        <number>3</number>
++       </property>
++       <item row="0" column="0" colspan="2">
++        <widget class="QCheckBox" name="shadow">
++         <property name="text">
++          <string>Enable client-side shadows on windows</string>
++         </property>
++        </widget>
++       </item>
++       <item row="1" column="0" colspan="2">
++        <widget class="QCheckBox" name="no_dock_shadow">
++         <property name="text">
++          <string>Avoid drawing shadows on dock/panel windows</string>
++         </property>
++        </widget>
++       </item>
++       <item row="2" column="0" colspan="2">
++        <widget class="QCheckBox" name="no_dnd_shadow">
++         <property name="text">
++          <string>Don't draw shadows on DND windows</string>
++         </property>
++        </widget>
++       </item>
++       <item row="3" column="0" colspan="2">
++        <widget class="QCheckBox" name="clear_shadow">
++         <property name="toolTip">
++          <string>Fix some weirdness with ARGB windows</string>
++         </property>
++         <property name="text">
++          <string>Zero the part of the shadow's mask behind the window</string>
++         </property>
++        </widget>
++       </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="shadow_radius_label">
+          <property name="text">
+@@ -69,6 +106,16 @@
+          </property>
+         </widget>
+        </item>
++       <item row="7" column="1">
++        <widget class="QDoubleSpinBox" name="shadow_opacity">
++         <property name="maximum">
++          <double>1.000000000000000</double>
++         </property>
++         <property name="singleStep">
++          <double>0.050000000000000</double>
++         </property>
++        </widget>
++       </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+@@ -83,37 +130,6 @@
+          </property>
+         </widget>
+        </item>
+-       <item row="3" column="0" colspan="2">
+-        <widget class="QCheckBox" name="clear_shadow">
+-         <property name="toolTip">
+-          <string>Fix some weirdness with ARGB windows</string>
+-         </property>
+-         <property name="text">
+-          <string>Zero the part of the shadow's mask behind the window</string>
+-         </property>
+-        </widget>
+-       </item>
+-       <item row="2" column="0" colspan="2">
+-        <widget class="QCheckBox" name="no_dnd_shadow">
+-         <property name="text">
+-          <string>Don't draw shadows on DND windows</string>
+-         </property>
+-        </widget>
+-       </item>
+-       <item row="1" column="0" colspan="2">
+-        <widget class="QCheckBox" name="no_dock_shadow">
+-         <property name="text">
+-          <string>Avoid drawing shadows on dock/panel windows</string>
+-         </property>
+-        </widget>
+-       </item>
+-       <item row="0" column="0" colspan="2">
+-        <widget class="QCheckBox" name="shadow">
+-         <property name="text">
+-          <string>Enable client-side shadows on windows</string>
+-         </property>
+-        </widget>
+-       </item>
+        <item row="9" column="0" colspan="2">
+         <widget class="QCheckBox" name="shadow_ignore_shaped">
+          <property name="text">
+@@ -121,13 +137,10 @@
+          </property>
+         </widget>
+        </item>
+-       <item row="7" column="1">
+-        <widget class="QDoubleSpinBox" name="shadow_opacity">
+-         <property name="maximum">
+-          <double>1.000000000000000</double>
+-         </property>
+-         <property name="singleStep">
+-          <double>0.050000000000000</double>
++       <item row="10" column="0" colspan="2">
++        <widget class="QCheckBox" name="xinerama_shadow_crop">
++         <property name="text">
++          <string>Crop shadows of maximized windows from extended displays</string>
+          </property>
+         </widget>
+        </item>
+@@ -356,11 +369,39 @@
+        <string>Other</string>
+       </attribute>
+       <layout class="QFormLayout" name="formLayout_4">
+-       <item row="0" column="0">
+-        <widget class="QLabel" name="label_14">
+-         <property name="text">
+-          <string>Not implemented yet</string>
+-         </property>
++       <item row="0" column="1">
++        <widget class="QGroupBox" name="backend">
++         <property name="sizePolicy">
++          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
++           <horstretch>0</horstretch>
++           <verstretch>0</verstretch>
++          </sizepolicy>
++         </property>
++         <property name="title">
++          <string>Rendering backend</string>
++         </property>
++         <property name="flat">
++          <bool>false</bool>
++         </property>
++         <property name="checkable">
++          <bool>false</bool>
++         </property>
++         <layout class="QVBoxLayout" name="verticalLayout_2">
++          <item>
++           <widget class="QRadioButton" name="backend_xrender">
++            <property name="text">
++             <string>X Render</string>
++            </property>
++           </widget>
++          </item>
++          <item>
++           <widget class="QRadioButton" name="backend_glx">
++            <property name="text">
++             <string>GLX (OpenGL)</string>
++            </property>
++           </widget>
++          </item>
++         </layout>
+         </widget>
+        </item>
+       </layout>
+diff --git a/translations/compton-conf_ca.desktop b/translations/compton-conf_ca.desktop
+new file mode 100644
+index 0000000..d60762f
+--- /dev/null
++++ b/translations/compton-conf_ca.desktop
+@@ -0,0 +1,3 @@
++Name[ca]=Efectes de les finestres
++GenericName[ca]=Configuració de Compton
++Comment[ca]=Configureu els efectes de les finestres de Compton

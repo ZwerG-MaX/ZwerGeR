@@ -1,0 +1,16 @@
+diff -Nur a/startlxqt.in b/startlxqt.in
+--- a/startlxqt.in	2017-10-21 20:39:00.000000000 +0100
++++ b/startlxqt.in	2017-12-16 12:15:51.224228628 +0000
+@@ -84,11 +84,8 @@
+     fi
+ fi
+ 
+-# Qt4 platform plugin
+-export QT_PLATFORM_PLUGIN=lxqt
+-
+ # Qt5 platform plugin
+-export QT_QPA_PLATFORMTHEME=lxqt
++export QT_QPA_PLATFORMTHEME=gtk2
+ 
+ # use lxqt-applications.menu for main app menu
+ export XDG_MENU_PREFIX="lxqt-"

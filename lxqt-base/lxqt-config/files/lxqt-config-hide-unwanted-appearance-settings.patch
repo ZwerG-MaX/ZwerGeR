@@ -1,0 +1,37 @@
+diff -Nur a/lxqt-config-appearance/main.cpp b/lxqt-config-appearance/main.cpp
+--- a/lxqt-config-appearance/main.cpp	2017-10-21 20:10:53.000000000 +0100
++++ b/lxqt-config-appearance/main.cpp	2017-12-17 10:18:16.454195148 +0000
+@@ -30,10 +30,7 @@
+ #include <LXQt/Settings>
+ #include <LXQt/ConfigDialog>
+ #include <QCommandLineParser>
+-#include "iconthemeconfig.h"
+ #include "lxqtthemeconfig.h"
+-#include "styleconfig.h"
+-#include "fontsconfig.h"
+ 
+ #include "../liblxqt-config-cursor/selectwnd.h"
+ 
+@@ -59,22 +56,11 @@
+     app.setActivationWindow(dialog);
+ 
+     QSettings& qtSettings = *settings; // use lxqt config file for Qt settings in Qt5.
+-    StyleConfig* stylePage = new StyleConfig(settings, &qtSettings, dialog);
+-    dialog->addPage(stylePage, QObject::tr("Widget Style"), QStringList() << "preferences-desktop-theme" << "preferences-desktop");
+-    QObject::connect(dialog, SIGNAL(reset()), stylePage, SLOT(initControls()));
+-
+-    IconThemeConfig* iconPage = new IconThemeConfig(settings, dialog);
+-    dialog->addPage(iconPage, QObject::tr("Icons Theme"), QStringList() << "preferences-desktop-icons" << "preferences-desktop");
+-    QObject::connect(dialog, SIGNAL(reset()), iconPage, SLOT(initControls()));
+ 
+     LXQtThemeConfig* themePage = new LXQtThemeConfig(settings, dialog);
+     dialog->addPage(themePage, QObject::tr("LXQt Theme"), QStringList() << "preferences-desktop-color" << "preferences-desktop");
+     QObject::connect(dialog, SIGNAL(reset()), themePage, SLOT(initControls()));
+ 
+-    FontsConfig* fontsPage = new FontsConfig(settings, &qtSettings, dialog);
+-    dialog->addPage(fontsPage, QObject::tr("Font"), QStringList() << "preferences-desktop-font" << "preferences-desktop");
+-    QObject::connect(dialog, SIGNAL(reset()), fontsPage, SLOT(initControls()));
+-
+     SelectWnd* cursorPage = new SelectWnd(sessionSettings, dialog);
+     cursorPage->setCurrent();
+     dialog->addPage(cursorPage, QObject::tr("Cursor"), QStringList() << "input-mouse" << "preferences-desktop");

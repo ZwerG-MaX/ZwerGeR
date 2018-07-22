@@ -1,0 +1,88 @@
+diff -Nur a/menu/lxqt-applications.menu b/menu/lxqt-applications.menu
+--- a/menu/lxqt-applications.menu	2017-10-21 20:47:44.000000000 +0100
++++ b/menu/lxqt-applications.menu	2017-10-22 13:04:08.035578669 +0100
+@@ -20,12 +20,13 @@
+ 		<Include>
+ 			<And>
+ 				<Category>Utility</Category>
+-			 <!-- Accessibility spec must have either the Utility or Settings
++	<!-- Accessibility spec must have either the Utility or Settings
+ 			 category, and we display an accessibility submenu already for
+ 			 the ones that do not have Settings, so don't display accessibility
+ 			 applications here -->
+ 				<Not><Category>Accessibility</Category></Not>
+ 				<Not><Category>System</Category></Not>
++				<Not><Category>Graphics</Category></Not>
+ 			</And>
+ 		</Include>
+ 	</Menu> <!-- End Accessories -->
+@@ -61,6 +62,7 @@
+ 		<Include>
+ 			<And>
+ 				<Category>Education</Category>
++				<Not><Category>Office</Category></Not>
+ 			</And>
+ 		</Include>
+ 	</Menu> <!-- End Education -->
+@@ -83,7 +85,7 @@
+ 		<Include>
+ 			<And>
+ 				<Category>Graphics</Category>
+-				<Not><Category>Utility</Category></Not>
++				<Not><Category>Office</Category></Not>
+ 			</And>
+ 		</Include>
+ 	</Menu> <!-- End Graphics -->
+@@ -95,6 +97,7 @@
+ 		<Include>
+ 			<And>
+ 				<Category>Network</Category>
++				<Not><Category>Game</Category></Not>
+ 			</And>
+ 		</Include>
+ 	</Menu>	 <!-- End Internet -->
+@@ -125,6 +128,8 @@
+ 		<Include>
+ 			<And>
+ 				<Category>Office</Category>
++				<Not><Category>Network</Category></Not>
++				<Not><Category>AudioVideo</Category></Not>
+ 			</And>
+ 		</Include>
+ 	</Menu> <!-- End Office -->
+@@ -140,26 +145,10 @@
+ 				<Not><Category>PackageManager</Category></Not>
+ 				<Not><Category>X-Leave</Category></Not>
+ 				<Not><Category>Screensaver</Category></Not>
+-				<Not><Filename>lxqt-about.desktop</Filename></Not>
+ 			</And>
+ 		</Include>
+ 	</Menu>	 <!-- End System Tools -->
+ 
+-	<!-- Other -->
+-	<Menu>
+-		<Name>Other</Name>
+-		<Directory>lxde-other.directory</Directory>
+-		<OnlyUnallocated/>
+-		<Include>
+-			<And>
+-				<Not><Category>Core</Category></Not>
+-				<Not><Category>Settings</Category></Not>
+-				<Not><Category>Screensaver</Category></Not>
+-			</And>
+-		</Include>
+-		</Menu> <!-- End Other -->
+-
+-	<!-- Settings -->
+ 	<Menu>
+ 		<Name>DesktopSettings</Name>
+ 		<Directory>lxde-settings.directory</Directory>
+@@ -204,7 +193,7 @@
+ 		</Layout>
+ 	</Menu> <!-- End Settings -->
+ 
+-	<!-- Leave -->
++		<!-- Leave -->
+ 	<Menu>
+ 		<Name>X-Leave</Name>
+ 		<Directory>lxqt-leave.directory</Directory>

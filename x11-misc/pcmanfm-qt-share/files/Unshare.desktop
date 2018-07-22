@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Action
+Name=Samba network unshare
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Exec=/usr/bin/net usershare delete %w %f "" && chmod = 755 %f && find %f -type d -exec chmod 755 {} \; && find %f -type f -exec chmod 644 {} \;
+Name=Default profile
