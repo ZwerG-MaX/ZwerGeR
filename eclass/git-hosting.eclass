@@ -88,6 +88,18 @@ _gh_provider:freedesktop:snap_url_tail() {
 	printf '%s' "snapshot/${ref}${snap_ext}"
 }
 
+
+_gh_provider:gentoo:base_url() { printf '%s' 'gitweb.gentoo.org' ; }
+_gh_provider:gentoo:snap_ext() { printf '%s' '.tar.bz2'          ; }
+_gh_provider:gentoo:snap_url_tail() {
+	(( $# != 1 )) && die
+
+	local -r -- ref="${1}"
+	local -r -- snap_ext="$(_gh_provider:gentoo:snap_ext)"
+
+	printf '%s' "snapshot/${ref}${snap_ext}"
+}
+
 ### END Base classes
 
 

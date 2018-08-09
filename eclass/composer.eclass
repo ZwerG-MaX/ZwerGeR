@@ -1,4 +1,4 @@
-# Copyright 2016 Jan Chren (rindeal)
+# Copyright 2016,2018 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: composer.eclass
@@ -13,14 +13,20 @@ case "${EAPI:-0}" in
 	*) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
-DEPEND="app-misc/jq"
+inherit rindeal
+
+
+DEPEND="
+	app-misc/jq
+	dev-php/composer
+"
 
 _composer_do_env_dir() {
 	local var="${1}" default="${2}"
 
 	[ -z "${!var}" ] && declare -g "${var}"="${default}"
 	export "${var}"
-	mkdir -v -p "${!var}" || die
+	rmkdir "${!var}"
 
 	debug-print "${var}='${!var}'"
 }
@@ -49,7 +55,7 @@ composer_pkg_setup() {
 		COMPOSER_BIN_DIR "${T}/composer/bin"
 
 	# this dir shouldn't exist for now
-	rm -rf "${S}" || die
+	NO_V=1 rrm -rf "${S}"
 }
 
 ecomposer() {
@@ -87,8 +93,8 @@ composer_list_bin() {
 }
 
 composer_copy_install_all() {
-	mkdir -p "${ED}${COMPOSER_INSTALL_DIR}" || die
-	cp -r "${S}"/* "${ED}${COMPOSER_INSTALL_DIR}" || die
+	rmkdir "${ED}${COMPOSER_INSTALL_DIR}"
+	NO_V=1 rcp -r "${S}"/* "${ED}${COMPOSER_INSTALL_DIR}"
 }
 
 composer_install_bins() {

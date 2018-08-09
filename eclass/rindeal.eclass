@@ -128,47 +128,47 @@ _NO_V() {
 	echo "$( (( NO_V )) || echo '--verbose' )"
 }
 
-epushd() {
+rpushd() {
 	pushd "${@}" >/dev/null || die -n
 }
 
-epopd() {
+rpopd() {
 	popd "${@}" >/dev/null || die -n
 }
 
-emkdir() {
+rmkdir() {
 	mkdir $(_NO_V) -p "${@}" || die -n
 }
 
-ecp() {
+rcp() {
 	cp $(_NO_V) "${@}" || die -n
 }
 
-emv() {
+rmv() {
 	mv $(_NO_V) "${@}" || die -n
 }
 
-eln() {
+rln() {
 	ln $(_NO_V) "${@}" || die -n
 }
 
-echown() {
+rchown() {
 	chown $(_NO_V) "${@}" || die -n
 }
 
-echmod() {
+rchmod() {
 	chmod $(_NO_V) "${@}" || die -n
 }
 
-erm() {
+rrm() {
 	rm $(_NO_V) --interactive=never --preserve-root --one-file-system "${@}" || die -n
 }
 
-ermdir() {
+rrmdir() {
 	rmdir $(_NO_V) "${@}" || die -n
 }
 
-esed() {
+rsed() {
 	local diff_prog=()
 
 	if (( RINDEAL_DEBUG )) ; then

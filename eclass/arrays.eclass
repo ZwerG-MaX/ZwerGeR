@@ -1,28 +1,47 @@
-# Copyright 2016 Jan Chren (rindeal)
+# Copyright 2016-2018 Jan Chren (rindeal)
 # Distributed under the terms of the GNU General Public License v2
 
-# @ECLASS: arrays.eclass
-# @MAINTAINER:
-# Jan Chren (rindeal) <dev.rindeal+gentoo-overlay@gmail.com>
-# @BLURB: <SHORT_DESCRIPTION>
-# @DESCRIPTION:
+# Usage:
+#
+#     CDEPEND_A=()
+#     DEPEND_A=( "${CDEPEND_A[@]}" )
+#     RDEPEND_A=( "${CDEPEND_A[@]}" )
+#
+#     inherit arrays
+#
 
-if [ -z "${_ARRAYS_ECLASS}" ] ; then
 
 case "${EAPI:-0}" in
-    6) ;;
+    6|7) ;;
     *) die "Unsupported EAPI='${EAPI}' for '${ECLASS}'" ;;
 esac
 
-for _v in {,R,P,C}DEPEND IUSE KEYWORDS LICENSE REQUIRED_USE SRC_URI ; do
+
+_v_a=(
+	LICENSE
+
+	SRC_URI
+
+	KEYWORDS
+	IUSE
+
+	{C,,R,P}DEPEND
+
+	REQUIRED_USE
+
+	## java-*.eclass:
+	CP_DEPEND
+	JAVA_SRC_DIR
+)
+for _v in "${_v_a[@]}" ; do
 	if [[ "$(declare -p ${_v}_A 2>/dev/null)" == "declare -a"* ]] ; then
-		debug-print "${ECLASS}: Converting ${_v}_A to ${_v}"
+		debug-print "${ECLASS}: Converting '${_v}_A' to '${_v}'"
 		eval "${_v}+=\" \${${_v}_A[*]}\""
-		debug-print "${ECLASS}: Unsetting ${_v}_A"
+
+		debug-print "${ECLASS}: Unsetting '${_v}_A'"
 		unset ${_v}_A
+	elif [[ -v ${_v} ]] ; then
+		debug-print "${ECLASS}: variable '${_v}' is not an array, but string or number!"
 	fi
 done
-unset _v
-
-_ARRAYS_ECLASS=1
-fi
+unset _v _v_a

@@ -29,6 +29,8 @@ format_qt_pro() {
 	# set default value
 	[[ "$(declare -p qt_pro_awk_opts 2>/dev/null)" == "declare -a"* ]] || local qt_pro_awk_opts=( -i inplace )
 
+	einfo "* Formatting qmake files: ${files[*]}"
+
 	gawk "${qt_pro_awk_opts[@]}" --file=<( cat <<'_EOF_'
 		BEGIN {
  			# The name of the variable in .pro file with a multiline value.

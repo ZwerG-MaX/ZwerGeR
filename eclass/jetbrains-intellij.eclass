@@ -16,14 +16,17 @@ esac
 inherit rindeal
 
 
-## functions: make_desktop_entry, newicon
-inherit desktop
-## functions: eshopts_push, eshopts_pop
-inherit estack
 ## functions: get_version_component_range, get_major_version
 inherit versionator
+
 ## EXPORT_FUNCTIONS: src_prepare, pkg_preinst, pkg_postinst, pkg_postrm
 inherit xdg
+
+## functions: make_desktop_entry, newicon
+inherit desktop
+
+## functions: eshopts_push, eshopts_pop
+inherit estack
 
 
 declare -g -r \
@@ -93,7 +96,7 @@ jetbrains-intellij_src_unpack() {
 
 	einfo "Unpacking '${archive}' to '${S}'"
 
-	NO_V=1 emkdir "${S}"
+	NO_V=1 rmkdir "${S}"
 
 	local tar=(
 		tar --extract
@@ -106,8 +109,8 @@ jetbrains-intellij_src_unpack() {
 	)
 
 	local excludes=( "${_JBIJ_DEFAULT_TAR_EXCLUDE[@]}" )
-	use system-jre	&& excludes+=( 'jre' )
-	use amd64		|| excludes+=( bin/{fsnotifier64,libbreakgen64.so,libyjpagent-linux64.so,LLDBFrontend} )
+	use system-jre && excludes+=( 'jre' )
+	use amd64      || excludes+=( bin/{fsnotifier64,libbreakgen64.so,libyjpagent-linux64.so,LLDBFrontend} )
 
 	readonly JBIJ_TAR_EXCLUDE
 	excludes+=( "${JBIJ_TAR_EXCLUDE[@]}" )
@@ -170,10 +173,11 @@ readonly JBIJ_STARTUP_SCRIPT_NAME
 _jetbrains-intellij_src_install-icon() {
 	debug-print-function "${FUNCNAME}" "${@}"
 
-	# nullglob is required otherwise BASH will think '*' is a filename
+	# First find any '*.svg' and '*.png' images in the 'bin/' dir.
+	# Nullglob is required otherwise BASH will think '*' is a filename.
 	eshopts_push -s nullglob
-	# first find any '*.svg' and '*.png' images in the 'bin/' dir
 	local -r svg=( bin/*.svg ) png=( bin/*.png )
+	eshopts_pop
 
 	# prefer SVG icons if any were found
 	if (( ${#svg[@]} )) ; then
@@ -181,14 +185,13 @@ _jetbrains-intellij_src_install-icon() {
 
 	# PNG otherwise
 	elif (( ${#png[@]} )) ; then
-		# icons size is sometimes 128 and sometimes 256
+		# icons size is sometimes 128 and sometimes 256, let's stick with the smaller value
 		newicon -s 128 "${png[0]}" "${_JBIJ_PN_SLOTTED}.png"
 
 	# throw ebuild QA warning if nothing was found
 	else
 		equawarn "No icon found"
 	fi
-	eshopts_pop
 }
 
 _jetbrains-intellij_src_install-pre() {
@@ -204,20 +207,20 @@ _jetbrains-intellij_src_install-fix() {
 	[[ -f "bin/${JBIJ_STARTUP_SCRIPT_NAME}" ]] || die "'bin/${JBIJ_STARTUP_SCRIPT_NAME}' not found"
 
 	## fix permissions
-	echmod a+x bin/${JBIJ_STARTUP_SCRIPT_NAME}
-	echmod a+x bin/fsnotifier*
+	rchmod a+x bin/${JBIJ_STARTUP_SCRIPT_NAME}
+	rchmod a+x bin/fsnotifier*
 
 	if ! use system-jre ; then
 		# upstream renames/moves this dir very often
 		# https://github.com/rindeal/gentoo-overlay/issues/160
 		# https://github.com/rindeal/gentoo-overlay/issues/165
 		eshopts_push -s globstar
-		echmod a+x **/jre*/**/bin/*
+		rchmod a+x **/jre*/**/bin/*
 		eshopts_pop
 	fi
 
 	if [[ -v JBIJ_ADDITIONAL_EXECUTABLES[@] ]] ; then
-		echmod a+x "${JBIJ_ADDITIONAL_EXECUTABLES[@]}"
+		rchmod a+x "${JBIJ_ADDITIONAL_EXECUTABLES[@]}"
 	fi
 }
 
@@ -230,10 +233,10 @@ _jetbrains-intellij_src_install-post() {
 	## generate and install .desktop menu file
 	local -r make_desktop_entry_args=(
 		# start the script directly
-		"${_JBIJ_PN_SLOTTED} %U"	# exec
-		"${JBIJ_PN_PRETTY} ${SLOT}"	# name
-		"${_JBIJ_PN_SLOTTED}"		# icon
-		"$(printf '%s;' "${_JBIJ_DEFAULT_DESKTOP_CATEGORIES[@]}" "${JBIJ_DESKTOP_CATEGORIES[@]}")"	# categories
+		"${_JBIJ_PN_SLOTTED} %U"    # exec
+		"${JBIJ_PN_PRETTY} ${SLOT}" # name
+		"${_JBIJ_PN_SLOTTED}"       # icon
+		"$(printf '%s;' "${_JBIJ_DEFAULT_DESKTOP_CATEGORIES[@]}" "${JBIJ_DESKTOP_CATEGORIES[@]}")"  # categories
 	)
 	local -r make_desktop_entry_extras=(
 		"${_JBIJ_DEFAULT_DESKTOP_EXTRAS[@]}"
@@ -243,7 +246,7 @@ _jetbrains-intellij_src_install-post() {
 		"$( printf '%s\n' "${make_desktop_entry_extras[@]}" )"
 
 	## recommended by: https://confluence.jetbrains.com/display/IDEADEV/Inotify+Watches+Limit
-	NO_V=1 emkdir "${D}"/etc/sysctl.d
+	NO_V=1 rmkdir "${D}"/etc/sysctl.d
 	echo "fs.inotify.max_user_watches = 524288" \
 		>"${D}"/etc/sysctl.d/30-idea-inotify-watches.conf || die
 }
@@ -253,19 +256,19 @@ jetbrains-intellij_src_install() {
 
 	_jetbrains-intellij_src_install-pre
 
-	emkdir "${ED%/}${JBIJ_INSTALL_DIR}"
+	rmkdir "${ED%/}${JBIJ_INSTALL_DIR}"
 
 	# use `cp` as `doins()` is too slow
-	NO_V=1 ecp -r . "${ED%/}${JBIJ_INSTALL_DIR}"
+	NO_V=1 rcp -r . "${ED%/}${JBIJ_INSTALL_DIR}"
 
 	# normalize permissions as `install` would
 	find "${ED%/}${JBIJ_INSTALL_DIR}" -type f -print0 | xargs -0 chmod 644 --
 	assert
 
 	## now let's push into the image dir and change few things in there
-	epushd "${ED%/}${JBIJ_INSTALL_DIR}"
+	rpushd "${ED%/}${JBIJ_INSTALL_DIR}"
 	_jetbrains-intellij_src_install-fix
-	epopd
+	rpopd
 
 	_jetbrains-intellij_src_install-post
 }
