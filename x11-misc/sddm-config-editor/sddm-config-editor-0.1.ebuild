@@ -25,3 +25,14 @@ DEPEND="
 	sys-auth/polkit
 "
 RDEPEND="${DEPEND}"
+
+src_configure() {
+  eqmake5 cd "$srcdir/$_pkgname/cpp"
+  qmake PREFIX="$pkgdir"
+  make
+}
+
+src_install() {
+  cd "$srcdir/$_pkgname/cpp"
+  make install
+}
