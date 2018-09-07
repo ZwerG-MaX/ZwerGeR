@@ -15,7 +15,14 @@ KEYWORDS="~amd64 ~x86"
 LICENSE="MPL-1.1"
 SLOT="0"
 
-SRC_URI="http://files.freeswitch.org/releases/freeswitch/${P}.tar.xz"
+if [ "${PV}" = "9999" ]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://freeswitch.org/stash/scm/fs/freeswitch.git"
+	KEYWORDS=""
+else
+	SRC_URI="http://files.freeswitch.org/releases/freeswitch/${P}.tar.xz"
+fi
+
 IUSE="esl +libedit odbc postgres +resampler +zrtp debug"
 
 LANGS="de en es es_ar fa fr he hr hu it ja nl pl pt ru sv th zh"
@@ -125,12 +132,12 @@ RDEPEND="
 	virtual/libc
 	>=dev-db/sqlite-3.6.20
 	>=dev-libs/libpcre-7.8
-	|| ( =media-libs/speex-1.2_rc1 ( >=media-libs/speex-1.2_rc2 >=media-libs/speexdsp-1.2_rc2 ) )
+	>=media-libs/speex-1.2_rc1
 	>=net-misc/curl-7.19
 	libedit? ( dev-libs/libedit )
 	odbc? ( dev-db/unixODBC )
 
-	esl_java? ( >=virtual/jre-1.8:* )
+	esl_java? ( >=virtual/jre-1.5:* )
 	esl_lua? ( || ( dev-lang/lua:5.1 dev-lang/luajit:2 ) )
 	esl_managed? ( >=dev-lang/mono-1.9 )
 	esl_perl? ( dev-lang/perl )
@@ -180,12 +187,12 @@ DEPEND="${RDEPEND}
 	>=sys-devel/autoconf-2.60
 	>=sys-devel/automake-1.10
 	virtual/pkgconfig
-	esl_java? ( >=virtual/jdk-1.8:* >=dev-lang/swig-2.0 )
+	esl_java? ( >=virtual/jdk-1.5:* >=dev-lang/swig-2.0 )
 	esl_lua? ( >=dev-lang/swig-2.0 )
 	esl_managed? ( >=dev-lang/swig-2.0 )
 	esl_perl? ( >=dev-lang/swig-2.0 )
 	esl_python? ( >=dev-lang/swig-2.0 )
-	freeswitch_modules_java? ( >=virtual/jdk-1.8:* )
+	freeswitch_modules_java? ( >=virtual/jdk-1.5:* )
 "
 
 PDEPEND="media-sound/freeswitch-sounds
@@ -360,7 +367,8 @@ esl_doperlmod() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}/${P}-zrtp-pie.patch"
+	# disable -Werror
+	epatch "${FILESDIR}/${P}-no-werror.patch"
 	# Fix broken libtool?
 	sed -i "1i export to_tool_file_cmd=func_convert_file_noop" "${S}/libs/apr/Makefile.in"
 	sed -i "1i export to_tool_file_cmd=func_convert_file_noop" "${S}/libs/apr-util/Makefile.in"
@@ -399,7 +407,7 @@ src_configure() {
 		${CTARGET:+--target=${CTARGET}} \
 		$(use_enable libedit core-libedit-support) \
 		--localstatedir="/var" \
-		--sysconfdir="/etc" \
+		--sysconfdir="/etc/${PN}" \
 		--with-modinstdir="/usr/$(get_libdir)/${PN}/mod" \
 		--with-rundir="/var/run/${PN}" \
 		--with-logfiledir="/var/log/${PN}" \

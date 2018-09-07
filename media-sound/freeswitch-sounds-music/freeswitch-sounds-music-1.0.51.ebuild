@@ -12,7 +12,7 @@ IUSE="+8k 16k 32k 48k"
 REQUIRED_USE=" || ( 8k 16k 32k 48k )"
 SLOT="0"
 
-URI_BASE="http://files.freeswitch.org/releases/music/${PN}"
+URI_BASE="http://files.freeswitch.org/releases/sounds/${PN}"
 SRC_URI="
 	 8k? ( ${URI_BASE}-8000-${PV}.tar.gz )
 	16k? ( ${URI_BASE}-16000-${PV}.tar.gz )
