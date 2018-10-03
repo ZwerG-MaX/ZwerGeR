@@ -1,0 +1,71 @@
+# ChangeLog for app-office/1C_Enterprise-client
+# Copyright 2002-2015 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+*1C_Enterprise-client-8.3.6.1608 (03 Mar 2105)
+*1C_Enterprise-client-8.3.5.1460 (03 Mar 2105)
+
+  03 Mar 2015; Dmitry 'daks' Fomenko <daks12@gmail.com>,
+  +1C_Enterprise-client-8.3.6.1608.ebuild,
+  +1C_Enterprise-client-8.3.5.1460.ebuild:
+  Version bump.
+  
+*1C_Enterprise-client-8.3.3.721-r2.ebuild (11 Jul 2104)
+*1C_Enterprise-client-8.3.4.496-r1.ebuild (11 Jul 2104)
+*1C_Enterprise-server-8.3.5.1068 (11 Jul 2104)
+
+  11 Jul 2014; Dmitry 'daks' Fomenko <daks12@gmail.com>,
+  -1C_Enterprise-client-8.3.3.721-r1.ebuild,
+  -1C_Enterprise-client-8.3.4.365.ebuild,
+  -1C_Enterprise-client-8.3.4.496.ebuild,
+  +1C_Enterprise-client-8.3.3.721-r2.ebuild,
+  +1C_Enterprise-client-8.3.4.496-r1.ebuild,
+  +1C_Enterprise-server-8.3.5.1068.ebuild:
+  Fix bug #11 (http://www.forum.mista.ru/topic.php?id=699686),
+  purge old version, bump version.
+
+*1C_Enterprise-client-8.3.3.721-r1 (02 Jul 2014)
+*1C_Enterprise-client-8.3.4.496 (02 Jul 2104)
+
+  02 Jul 2014; Dmitry 'daks' Fomenko <daks12@gmail.com>,
+  +1C_Enterprise-client-8.3.3.721-r1.ebuild,
+  +1C_Enterprise-client-8.3.4.496.ebuild,
+  -1C_Enterprise-client-8.3.3.721.ebuild,
+  Update ebuilds version, purge old ebuilds, fix #14.
+
+  26 Dec 2013; Dmitry 'daks' Fomenko <daks12@gmail.com>,
+  -1C_Enterprise-client-8.3.1.531-r1.ebuild,
+  -1C_Enterprise-client-8.3.2.172.ebuild:
+  Purge old ebuilds.
+
+
+*1C_Enterprise-client-8.3.4.365 (21 Dec 2013)
+
+  21 Dec 2013; Dmitry 'daks' Fomenko <daks12@gmail.com>
+  +1C_Enterprise-client-8.3.4.365.ebuild:
+  Bump version.
+
+*1C_Enterprise-client-8.3.3.721 (20 Dec 2013)
+
+  20 Dec 2013; Dmitry 'daks' Fomenko <daks12@gmail.com>
+  +1C_Enterprise-client-8.3.3.721.ebuild:
+  Bump version.
+
+*app-office/1C_Enterprise-client-8.3.2.172
+
+  25 Dec 2012; Dmitry 'daks' Fomenko <daks12@gmail.com>
+  +1C_Enterprise-client-8.3.2.172.ebuild:
+  Bump version.
+
+*app-office/1C_Enterprise-client-8.3.1.531-r1
+
+  14 May 2012; Dmitry 'daks' Fomenko <daks12@gmail.com>
+  +1C_Enterprise-client-8.3.1.531-r1.ebuild,
+  -1C_Enterprise-client-8.3.1.531.ebuild:
+  net-print/cups has been added as a dependency. Purge old ebuild.
+
+*app-office/1C_Enterprise-client-8.3.1.531
+
+  14 May 2012; Dmitry 'daks' Fomenko <daks12@gmail.com>
+  +1C_Enterprise-client-8.3.1.531.ebuild, +metadata.xml:
+  Initial ebuild.
