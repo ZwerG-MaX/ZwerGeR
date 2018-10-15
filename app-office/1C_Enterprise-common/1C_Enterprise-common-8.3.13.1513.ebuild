@@ -1,35 +1,40 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
 
-EAPI="5"
+EAPI=7
 
-inherit eutils flag-o-matic multilib rpm versionator
+inherit eutils multilib rpm
 
 DESCRIPTION="Base component of 1C ERP system"
 HOMEPAGE="http://v8.1c.ru/"
 
-MY_PV="$(replace_version_separator 3 '-' )"
+MY_PV=$(ver_rs 3 '-')
 MY_PN="1C_Enterprise83-common"
-if use x86 ; then
-    MY_LIBDIR="i386"
-elif use amd64 ; then
-    MY_LIBDIR="x86_64"
+
+if [[ KEYWORDS == x86 ]] ; then
+	MY_LIBDIR="i386"
+elif [[ KEYWORDS == amd64 ]] ; then
+	MY_LIBDIR="x86_64"
 fi
 
-SRC_URI="x86? ( ${MY_PN}-${MY_PV}.i386.rpm
-	    nls? ( ${MY_PN}-nls-${MY_PV}.i386.rpm ) )
+SRC_URI="
+	x86? ( ${MY_PN}-${MY_PV}.i386.rpm
+	nls? ( ${MY_PN}-nls-${MY_PV}.i386.rpm ) )
 	amd64? ( ${MY_PN}-${MY_PV}.x86_64.rpm
-	    nls? ( ${MY_PN}-nls-${MY_PV}.x86_64.rpm ) )"
+	nls? ( ${MY_PN}-nls-${MY_PV}.x86_64.rpm ) )
+"
 
-SLOT="$(get_version_component_range 1-2)"
+SLOT=$(ver_cut 1-2)
 LICENSE="1CEnterprise_en"
-KEYWORDS=""
+KEYWORDS="amd64 x86"
 RESTRICT="fetch strip"
 IUSE="+nls"
 
-RDEPEND=">=sys-libs/glibc-2.3
-	>=dev-libs/icu-3.8.1-r1"
+RDEPEND="
+	>=sys-libs/glibc-2.3
+	>=dev-libs/icu-3.8.1-r1
+"
+
 DEPEND="${RDEPEND}"
 
 S="${WORKDIR}"
