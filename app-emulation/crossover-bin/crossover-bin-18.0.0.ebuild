@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
@@ -14,7 +14,7 @@ SRC_URI="https://media.codeweavers.com/pub/crossover/cxlinux/demo/install-crosso
 LICENSE="CROSSOVER-3"
 SLOT="0"
 KEYWORDS="-* ~amd64 ~x86"
-IUSE="+cups doc +gphoto2 +gsm +jpeg +lcms +ldap +mp3 +nls +openal +opengl +png +scanner +ssl +v4l"
+IUSE="+capi +cups doc +gphoto2 +gsm +jpeg +lcms +ldap +mp3 +nls +openal +opencl +opengl +png +scanner +ssl +v4l"
 RESTRICT="bindist test"
 QA_FLAGS_IGNORED="opt/cxoffice/.*"
 QA_PRESTRIPPED="opt/cxoffice/lib/.*
@@ -40,6 +40,7 @@ RDEPEND="${DEPEND}
 	dev-util/desktop-file-utils
 	!app-emulation/crossover-office-pro-bin
 	!app-emulation/crossover-office-bin
+	capi? ( net-libs/libcapi[abi_x86_32(-)] )
 	cups? ( net-print/cups[abi_x86_32(-)] )
 	gsm? ( media-sound/gsm[abi_x86_32(-)] )
 	jpeg? ( virtual/jpeg[abi_x86_32(-)] )
@@ -49,6 +50,7 @@ RDEPEND="${DEPEND}
 	mp3? ( >=media-sound/mpg123-1.5.0[abi_x86_32(-)] )
 	nls? ( sys-devel/gettext[abi_x86_32(-)] )
 	openal? ( media-libs/openal[abi_x86_32(-)] )
+	opencl? ( virtual/opencl[abi_x86_32(-)] )
 	opengl? (
 		virtual/glu[abi_x86_32(-)]
 		virtual/opengl[abi_x86_32(-)]
@@ -60,7 +62,9 @@ RDEPEND="${DEPEND}
 	media-libs/alsa-lib[abi_x86_32(-)]
 	>=media-libs/freetype-2.0.0[abi_x86_32(-)]
 	media-libs/mesa[abi_x86_32(-)]
+	sys-auth/nss-mdns[abi_x86_32(-)]
 	sys-apps/util-linux[abi_x86_32(-)]
+	sys-libs/ncurses:5/5[abi_x86_32(-)]
 	sys-libs/zlib[abi_x86_32(-)]
 	x11-libs/libICE[abi_x86_32(-)]
 	x11-libs/libSM[abi_x86_32(-)]
@@ -99,7 +103,7 @@ src_prepare() {
 
 src_install() {
 	# Install crossover symlink, bug #476314
-	dosym /opt/cxoffice/bin/crossover /opt/bin/crossover
+	dosym ../cxoffice/bin/crossover /opt/bin/crossover
 
 	# Install documentation
 	dodoc README changelog.txt
@@ -115,16 +119,25 @@ src_install() {
 	insinto /opt/cxoffice/etc
 	doins share/crossover/data/cxoffice.conf
 
+	# Konqueror in its infinite wisdom decides to try opening things for
+	# writing, which are sandbox violations. This breaks the install process if
+	# it is installed, so we ninja edit it to false so it so doesn't run.
+	sed -i -e 's/cxwhich konqueror/false &/' "${ED}opt/cxoffice/bin/locate_gui.sh" \
+		|| die "Could not apply workaround for konqueror"
+
 	# Install menus
 	# XXX: locate_gui.sh automatically detects *-application-merged directories
 	# This means what we install will vary depending on the contents of
 	# /etc/xdg, which is a QA violation. It is not clear how to resolve this.
-	XDG_DATA_DIRS="/usr/share" XDG_CONFIG_HOME="/etc/xdg" \
+	XDG_DATA_HOME="/usr/share" XDG_CONFIG_HOME="/etc/xdg" \
 		"${ED}opt/cxoffice/bin/cxmenu" --destdir="${ED}" --crossover --install \
 		|| die "Could not install menus"
 
+	# Revert ninja edit
+	sed -i -e 's/false \(cxwhich konqueror\)/\1/' "${ED}opt/cxoffice/bin/locate_gui.sh" \
+		|| die "Could not apply workaround for konqueror"
+
 	rm "${ED}usr/share/applications/"*"Uninstall CrossOver Linux.desktop" \
-		"${ED}opt/cxoffice/support/desktopdata/cxoffice-0/cxmenu/Launchers/StartMenu/Uninstall CrossOver Linux.desktop" \
 		|| die "Could not remove uninstall menus"
 	sed -i \
 		-e "s:\"${ED}\".::" \
@@ -132,7 +145,6 @@ src_install() {
 		"${ED}/opt/cxoffice/lib/perl/CXMenuXDG.pm" \
 		|| die "Could not fix paths in ${ED}/opt/cxoffice/lib/perl/CXMenuXDG.pm"
 	sed -i -e "s:${ED}:/:" \
-		"${ED}/opt/cxoffice/support/desktopdata/cxoffice-0/cxmenu/Launchers/StartMenu/"*.desktop \
 		"${ED}usr/share/applications/"*"CrossOver.desktop" \
 		|| die "Could not fix paths of *.desktop files"
 }
