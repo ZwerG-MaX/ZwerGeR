@@ -3,22 +3,26 @@
 
 EAPI=6
 
-inherit gnome2-utils xdg
+inherit gnome2-utils
 
-ELECTRON_SLOT="1.8"
+ELECTRON_SLOT="2.0"
 DESCRIPTION="The intuitive, fast, and beautiful cross-platform Git client"
 HOMEPAGE="https://www.gitkraken.com"
-SRC_URI="https://release.gitkraken.com/linux/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://release.gitkraken.com/linux/GitKraken-v${PV}.tar.gz -> ${P}.tar.gz"
 RESTRICT="mirror"
 
 LICENSE="gitkraken-EULA"
 SLOT="0"
 KEYWORDS="-* ~amd64"
 
-RDEPEND="dev-util/electron-bin:${ELECTRON_SLOT}
-	net-libs/gnutls
+RDEPEND="
+	dev-util/electron-bin:${ELECTRON_SLOT}
 	gnome-base/libgnome-keyring
-	media-gfx/graphite2"
+	net-misc/curl
+	net-libs/gnutls
+"
+
+QA_PREBUILT="usr/libexec/gitkraken/app.asar.unpacked/node_modules/*"
 
 S="${WORKDIR}/gitkraken"
 
@@ -27,27 +31,22 @@ src_install() {
 	sed "s:%%ELECTRON%%:electron-${ELECTRON_SLOT}:" \
 		-i "${ED%/}"/usr/bin/gitkraken || die
 
-	insinto /usr/libexec/gitkraken
-	doins -r resources/app.asar{,.unpacked}
-	scanelf -Xe "${ED%/}"/usr/libexec/gitkraken/app.asar.unpacked/node_modules/nodegit/build/Release/nodegit.node
+	# Note: intentionally not using "doins" so that we preserve +x bits
+	dodir /usr/libexec/gitkraken
+	cp -R resources/app.asar{,.unpacked} "${ED%/}"/usr/libexec/gitkraken || die
 
-	dosym libcurl.so.4 /usr/$(get_libdir)/libcurl-gnutls.so.4
+	dosym libcurl.so.4 "/usr/$(get_libdir)/libcurl-gnutls.so.4"
 
 	doicon -s 512 "${FILESDIR}"/icon/gitkraken.png
-	make_desktop_entry gitkraken Gitkraken gitkraken Development
-}
-
-pkg_preinst() {
-	xdg_pkg_preinst
-	gnome2_icon_savelist
+	make_desktop_entry gitkraken GitKraken gitkraken Development
 }
 
 pkg_postinst() {
-	xdg_pkg_postinst
+	xdg_desktop_database_update
 	gnome2_icon_cache_update
 }
 
 pkg_postrm() {
-	xdg_pkg_postrm
+	xdg_desktop_database_update
 	gnome2_icon_cache_update
 }
