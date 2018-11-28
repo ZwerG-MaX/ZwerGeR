@@ -76,7 +76,7 @@ src_prepare() {
 	default
 
 	sed -i 's:TAG+="uaccess":\0, TAG+="udev-acl":g' \
-		lib/udev/rules.d/99-steam-controller-perms.rules || die
+		lib/udev/rules.d/60-steam-input.rules || die
 
 	sed -i \
 		-e "s:@@DEBIAN_COMPAT@@:${EPREFIX}/usr/$(get_libdir)/debiancompat$(use amd64 && echo "\\:${EPREFIX}/usr/$(ABI=x86 get_libdir)/debiancompat"):g" \
@@ -101,9 +101,9 @@ src_install() {
 	insinto /usr/lib/steam/
 	doins bootstraplinux_ubuntu12_32.tar.xz
 
-	udev_dorules lib/udev/rules.d/99-steam-controller-perms.rules lib/udev/rules.d/60-HTC-Vive-perms.rules
+	udev_dorules lib/udev/rules.d/60-steam-input.rules lib/udev/rules.d/60-steam-vr.rules
 
-	dodoc debian/changelog steam_install_agreement.txt
+	dodoc debian/changelog steam_subscriber_agreement.txt
 	doman steam.6
 
 	domenu steam.desktop
